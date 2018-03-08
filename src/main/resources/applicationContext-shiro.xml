@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc"  
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd"
+	>
+
+	<description>shiro配置</description>
+
+	<!-- 记住我 -->
+	<!-- 会话Cookie模板 -->  
+	<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">  
+	    <constructor-arg value="sid"/>  
+	    <property name="httpOnly" value="true"/>  
+	    <property name="maxAge" value="-1"/>  
+	</bean>  
+	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">  
+	    <constructor-arg value="rememberMe"/>  
+	    <property name="httpOnly" value="true"/>  
+	    <property name="maxAge" value="2592000"/><!-- 30天 -->  
+	</bean>
+	<!-- rememberMe管理器 cipherKey是加密rememberMe Cookie的密钥；默认AES算法； -->  
+	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">  
+	    <property name="cipherKey" value="#{T(org.apache.shiro.codec.Base64).decode('4AvVhmFLUs0KTA3Kprsdag==')}"/>  
+	    <property name="cookie" ref="rememberMeCookie"/>  
+	</bean>
+	<bean id="rememberAuthFilter"  class="com.ef.video.shiro.RememberAuthenticationFilter">  
+	    <property name="rememberMeParam" value="rememberMe"/>
+	</bean>
+	<bean id="myRealm" class="com.ef.video.shiro.ShiroDBRealm"/>
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">  
+	    <property name="realm" ref="myRealm"/> 
+	    <property name="rememberMeManager" ref="rememberMeManager"/> 
+	</bean>
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">  
+	    <property name="securityManager" ref="securityManager"/>  
+	    <property name="loginUrl" value="/index"/>  
+	<property name="unauthorizedUrl" value="/"/>  
+
+	    <property name="filterChainDefinitions">  
+	        <value>
+	             / = anon
+	        	 /index = anon
+	        	 /view/**=anon
+	             /login/**= anon
+	             /asset/**=anon
+	             /public/**=anon
+	             /normal/user/main.do**=rememberAuthFilter
+	             /web/normal/video/**=rememberAuthFilter
+	             /cmsController/normal/article/list.do**=anon
+	             /cmsController/article/next.do**=anon
+	             /cmsController/article/pre.do**=anon
+	             /common/**=anon
+	             /BBS/index.jsp=anon
+	             /BBS/get**=anon
+	             /user/register.do = anon
+	             /user/modify.do = anon
+	             /user/update.do = anon	      
+	             /user/save.do = anon	             
+	             /user/validator.do = anon
+	             /web_/**=anon
+	             /admin/**=roles[admin]
+	             /*/admin/**=roles[admin]
+	             /*/normal/**=roles[normal]
+	    		 /web/normal/**=roles[normal] 
+	    		 /web/admin/**=roles[admin]
+	    		 /role/**=roles[admin]
+	    		 /resource/**=roles[admin]
+	    		 /user/add**=perms[admin:add]
+	             /plugins/**=anon
+	             /roles/**=anon
+	             /users/**=anon
+	             /upload/**=perms[upload]
+	             /uploads/attach/**=perms[download]
+	             /downloads/**=anon
+	             /assets/**=anon
+	             /cms/**=anon
+	             /font/**=anon
+	             /img/**=anon
+	             /all/**=anon
+	             /css/** = anon
+	             /html/** = anon
+	             /images/** = anon
+	             /js/** = anon
+	            /** = rememberAuthFilter
+	        </value>  
+	    </property>
+	</bean>  
+	<!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->  
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>  
+
+</beans>

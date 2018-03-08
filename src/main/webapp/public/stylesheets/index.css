@@ -1,0 +1,28 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+#messages { list-style-type: none; margin: 0; padding: 0; }
+#messages li { padding: 5px 10px; }
+#messages li:nth-child(odd) { background: #eee; }
+body {
+    margin:0px;
+    padding:0px;
+    font-family: "Segoe UI", "Microsoft Yahei", sans-serif;
+}
+@media screen and (min-width: 768px) and (max-width: 1024px){
+  #iframepage{
+    height: 100%;
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 1024px){
+  #iframepage{
+    height: 100%;
+  }
+}
+@media screen and (max-width: 766px){
+  #my-player{
+    height: 500px;
+  }
+
+  #iframepage{
+    height: 100%;
+  }
+}
